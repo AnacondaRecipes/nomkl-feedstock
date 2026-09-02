@@ -1,11 +1,24 @@
 package:
   name: nomkl
-  version: 2.0
+  version: 3.0
 
 build:
+  # nomkl-3.0-0 already exists on linux/osx/win-64; building there would
+  # collide on the exact filename at publish. This feedstock only backfills
+  # subdirs that lack it (currently win-arm64).
+  skip: True  # [not (win and arm64)]
+  number: 0
+  # openblas/mkl recipes hardpin the blas mutex as "nomkl 3.0 0" (exact build
+  # string), matching the legacy nomkl-3.0-0 package on win-64/linux/osx —
+  # a hashed build string would not satisfy that pin.
+  string: "0"
   allow_no_files: True
-  track_features:
-    - nomkl
+
+requirements:
+  run:
+    # nomkl 3.0 dropped 2.0's track_features; the mutex is expressed through
+    # the blas metapackage instead (same as nomkl-3.0-0 on the other subdirs).
+    - blas * openblas
 
 about:
-  license: BSD
+  license: BSD-3-clause
